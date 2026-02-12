@@ -34,8 +34,9 @@ jobs:
             --input target \
             --main-jar Generar_informe-1.0-SNAPSHOT.jar \
             --main-class org.example.Main \
-            --runtime-image target/image \
+            --java-options "--add-modules=javafx.controls,javafx.fxml,javafx.swing" \
             --dest target/installer
+
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
@@ -69,17 +70,18 @@ jobs:
       - name: Create Windows EXE with jpackage
         shell: cmd
         run: |
-          jpackage ^
-            --type exe ^
-            --name GeneradorInforme ^
-            --app-version 1.0 ^
-            --input target ^
-            --main-jar Generar_informe-1.0-SNAPSHOT.jar ^
-            --main-class org.example.Main ^
-            --runtime-image target\image ^
-            --win-menu ^
-            --win-shortcut ^
-            --dest target\installer
+            jpackage ^
+              --type exe ^
+              --name GeneradorInforme ^
+              --app-version 1.0 ^
+              --input target ^
+              --main-jar Generar_informe-1.0-SNAPSHOT.jar ^
+              --main-class org.example.Main ^
+              --java-options "--add-modules=javafx.controls,javafx.fxml,javafx.swing" ^
+              --win-menu ^
+              --win-shortcut ^
+              --dest target\installer
+
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
