@@ -1,0 +1,64 @@
+name: Build JAR + Installers (deb + windows)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build JAR
+        run: mvn -B clean package
+
+      - name: Build DEB (jpackage)
+        run: mvn -B clean javafx:jpackage
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-artifacts
+          path: |
+            target/*.jar
+            target/jpackage/**
+            target/**/jpackage/**
+            target/installer/**
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build JAR
+        run: mvn -B clean package
+
+      - name: Build Windows installer (jpackage)
+        run: mvn -B clean javafx:jpackage
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: |
+            target/*.jar
+            target/jpackage/**
+            target/**/jpackage/**
+            target/installer/**
