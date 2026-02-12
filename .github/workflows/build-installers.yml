@@ -2,9 +2,6 @@ name: Build JAR + Installers (deb + windows)
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
 
 jobs:
   linux:
@@ -19,11 +16,23 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build JAR
+      - name: Build fat JAR
         run: mvn -B clean package
 
-      - name: Build DEB (jpackage)
-        run: mvn -B clean javafx:jpackage
+      - name: Build runtime image (jlink)
+        run: mvn -B javafx:jlink
+
+      - name: Create DEB with jpackage
+        run: |
+          jpackage \
+            --type deb \
+            --name GeneradorInforme \
+            --app-version 1.0 \
+            --input target \
+            --main-jar Generar_informe-1.0-SNAPSHOT.jar \
+            --main-class org.example.Main \
+            --runtime-image target/image \
+            --dest target/installer
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
@@ -31,8 +40,6 @@ jobs:
           name: linux-artifacts
           path: |
             target/*.jar
-            target/jpackage/**
-            target/**/jpackage/**
             target/installer/**
 
   windows:
@@ -47,11 +54,23 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build JAR
+      - name: Build fat JAR
         run: mvn -B clean package
 
-      - name: Build Windows installer (jpackage)
-        run: mvn -B clean javafx:jpackage
+      - name: Build runtime image (jlink)
+        run: mvn -B javafx:jlink
+
+      - name: Create Windows installer with jpackage
+        run: |
+          jpackage ^
+            --type msi ^
+            --name GeneradorInforme ^
+            --app-version 1.0 ^
+            --input target ^
+            --main-jar Generar_informe-1.0-SNAPSHOT.jar ^
+            --main-class org.example.Main ^
+            --runtime-image target\image ^
+            --dest target\installer
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -59,6 +78,4 @@ jobs:
           name: windows-artifacts
           path: |
             target/*.jar
-            target/jpackage/**
-            target/**/jpackage/**
             target/installer/**
