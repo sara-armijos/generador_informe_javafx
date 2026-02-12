@@ -22,8 +22,6 @@ jobs:
       - name: List target (linux)
         run: ls -la target && ls -la target/*.jar
 
-      - name: Build runtime image (jlink)
-        run: mvn -B javafx:jlink
 
       - name: Create DEB with jpackage
         run: |
@@ -63,9 +61,6 @@ jobs:
 
       - name: List target (windows)
         run: dir target
-
-      - name: Build runtime image (jlink)
-        run: mvn -B javafx:jlink
 
       - name: Create Windows EXE with jpackage
         shell: cmd
