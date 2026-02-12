@@ -13,11 +13,14 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
-      - name: Build fat JAR
+      - name: Build JAR
         run: mvn -B clean package
+
+      - name: List target (linux)
+        run: ls -la target && ls -la target/*.jar
 
       - name: Build runtime image (jlink)
         run: mvn -B javafx:jlink
@@ -51,25 +54,31 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
-      - name: Build fat JAR
+      - name: Build JAR
         run: mvn -B clean package
+
+      - name: List target (windows)
+        run: dir target
 
       - name: Build runtime image (jlink)
         run: mvn -B javafx:jlink
 
-      - name: Create Windows installer with jpackage
+      - name: Create Windows EXE with jpackage
+        shell: cmd
         run: |
           jpackage ^
-            --type msi ^
+            --type exe ^
             --name GeneradorInforme ^
             --app-version 1.0 ^
             --input target ^
             --main-jar Generar_informe-1.0-SNAPSHOT.jar ^
             --main-class org.example.Main ^
             --runtime-image target\image ^
+            --win-menu ^
+            --win-shortcut ^
             --dest target\installer
 
       - name: Upload Windows artifacts
